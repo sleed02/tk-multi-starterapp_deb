@@ -48,11 +48,11 @@ class AppDialog(QtGui.QWidget):
         self.sg = self._app.shotgun
 
         self.project_text = (str(self._app.context))
+        self.project_code = self.project_text[-4:]
 
         self.sg_versions = self.get_version_info()
         self.sg_status_list = sorted(set([version["sg_status_list"] for version in self.sg_versions]))
         self.sg_status_list.insert(0, "All")
-        self.stored_text = []
 
         # now load in the UI that was created in the UI designer
         self.setup_ui()
@@ -99,9 +99,9 @@ class AppDialog(QtGui.QWidget):
         self.version_status_filter.currentIndexChanged.connect(self.on_version_status_change)
 
     def get_version_info(self, status=None):
-        # change filter based on status
+        # change filter based on status and project code from context
         filters = [
-            ['project.Project.id', 'is', 327]
+            ['project.Project.sg_project_code', 'is', self.project_code]
         ]
         if status:
             status_text = self.sg_status_list[status]
