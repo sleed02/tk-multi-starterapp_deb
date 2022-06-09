@@ -11,7 +11,7 @@
 import sgtk
 import os
 import sys
-import threading
+from datetime import date
 
 # by importing QT from sgtk rather than directly, we ensure that
 # the code will be compatible with both PySide and PyQt.
@@ -85,7 +85,7 @@ class AppDialog(QtGui.QWidget):
         # Create a layout for the versions
         self.optionsLayout = QtGui.QHBoxLayout()
         self.spaceItem = QtGui.QSpacerItem(50, 10, QtGui.QSizePolicy.Expanding)
-        self.process_button = QtGui.QPushButton("Process Selected Versions")
+        self.process_button = QtGui.QPushButton("Export Selected to Excel")
         self.optionsLayout.addWidget(self.process_button)
         self.optionsLayout.addSpacerItem(self.spaceItem)
         self.select_all_box = QtGui.QCheckBox("Select All")
@@ -104,6 +104,7 @@ class AppDialog(QtGui.QWidget):
     def connect_signals(self):
         self.version_status_filter.currentIndexChanged.connect(self.on_version_status_change)
         self.select_all_box.clicked.connect(self.update_selected_versions)
+        self.process_button.clicked.connect(self.export_to_excel)
 
     def get_version_info(self, status=None):
         # change filter based on status and project code from context
@@ -132,8 +133,7 @@ class AppDialog(QtGui.QWidget):
 
         for i, version in enumerate(self.sg_versions):
             # build out text to show
-            version_info_text = version["code"] + " - " + version["sg_status_list"]
-            self.checkbox = QtGui.QCheckBox(version_info_text)
+            self.checkbox = QtGui.QCheckBox(version["code"])
             self.checkbox.setChecked(True)
             self.listLayout.addRow(self.checkbox)
 
@@ -149,3 +149,11 @@ class AppDialog(QtGui.QWidget):
                 self.listLayout.itemAt(i).widget().setChecked(False)
             else:
                 self.listLayout.itemAt(i).widget().setChecked(True)
+
+    def export_to_excel(self):
+        # Create a workbook and active worksheet
+        for i in reversed(range(self.listLayout.count())):
+            version = self.listLayout.itemAt(i).widget().text()
+            logger.info(version)
+
+
