@@ -82,10 +82,16 @@ class AppDialog(QtGui.QWidget):
         self.outerLayout = QtGui.QVBoxLayout()
         # Create a form layout for the label and line edit
         self.listLayout = QtGui.QFormLayout()
-        # Create a layout for the checkboxes
+        # Create a layout for the versions
         self.optionsLayout = QtGui.QHBoxLayout()
-        # Add some checkboxes to the layout
-        self.optionsLayout.addWidget(self.context_label)
+        self.spaceItem = QtGui.QSpacerItem(50, 10, QtGui.QSizePolicy.Expanding)
+        self.process_button = QtGui.QPushButton("Process Selected Versions")
+        self.optionsLayout.addWidget(self.process_button)
+        self.optionsLayout.addSpacerItem(self.spaceItem)
+        self.select_all_box = QtGui.QCheckBox("Select All")
+        self.select_all_box.setChecked(True)
+        self.optionsLayout.addWidget(self.select_all_box)
+        self.optionsLayout.addSpacerItem(self.spaceItem)
         self.optionsLayout.addWidget(self.status_label)
         self.optionsLayout.addWidget(self.version_status_filter)
         # Nest the inner layouts into the outer layout
@@ -97,6 +103,7 @@ class AppDialog(QtGui.QWidget):
 
     def connect_signals(self):
         self.version_status_filter.currentIndexChanged.connect(self.on_version_status_change)
+        self.select_all_box.clicked.connect(self.update_selected_versions)
 
     def get_version_info(self, status=None):
         # change filter based on status and project code from context
@@ -123,14 +130,22 @@ class AppDialog(QtGui.QWidget):
         for i in reversed(range(self.listLayout.count())):
             self.listLayout.itemAt(i).widget().setParent(None)
 
-        for version in self.sg_versions:
+        for i, version in enumerate(self.sg_versions):
             # build out text to show
-            comb_text = version["code"] + " - " + version["sg_status_list"]
-            version_info_text = comb_text + " - " + version["created_at"].strftime("%b %d %Y")
-            self.listLayout.addRow(QtGui.QLineEdit(version_info_text))
+            version_info_text = version["code"] + " - " + version["sg_status_list"]
+            self.checkbox = QtGui.QCheckBox(version_info_text)
+            self.checkbox.setChecked(True)
+            self.listLayout.addRow(self.checkbox)
 
     def on_version_status_change(self):
         # get the status index and use it to collect the new versions
         status = self.version_status_filter.currentIndex()
         self.sg_versions = self.get_version_info(status)
         self.update_version_rows()
+
+    def update_selected_versions(self):
+        for i in reversed(range(self.listLayout.count())):
+            if self.listLayout.itemAt(i).widget().isChecked():
+                self.listLayout.itemAt(i).widget().setChecked(False)
+            else:
+                self.listLayout.itemAt(i).widget().setChecked(True)
