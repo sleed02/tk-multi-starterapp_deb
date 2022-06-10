@@ -73,8 +73,10 @@ class AppDialog(QtGui.QWidget):
         # lastly, set up our very basic UI
 
     def setup_ui(self):
+        self.setGeometry(100, 30, 100, 30)
+        self.setFixedSize(700, 700)
         self.version_status_filter = QtGui.QComboBox(self)
-        self.version_status_filter.setMinimumWidth(100)
+        self.version_status_filter.setMinimumWidth(50)
         self.version_status_filter.setMaximumWidth(150)
         self.version_status_filter.addItems(self.sg_status_list)
         self.context_label = QtGui.QLabel(self.project_text)
@@ -97,6 +99,10 @@ class AppDialog(QtGui.QWidget):
         # Nest the inner layouts into the outer layout
         self.outerLayout.addLayout(self.optionsLayout)
         # Set the window's main layout
+        self.scrollArea = QtGui.QScrollArea()
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scrollArea.setEnabled(True)
+        self.listLayout.addWidget(self.scrollArea)
         self.outerLayout.addLayout(self.listLayout)
         self.setLayout(self.outerLayout)
         self.update_version_rows()
@@ -137,6 +143,8 @@ class AppDialog(QtGui.QWidget):
             self.checkbox.setChecked(True)
             self.listLayout.addRow(self.checkbox)
 
+        self.select_all_box.setChecked(True)
+
     def on_version_status_change(self):
         # get the status index and use it to collect the new versions
         status = self.version_status_filter.currentIndex()
@@ -153,7 +161,8 @@ class AppDialog(QtGui.QWidget):
     def export_to_excel(self):
         # Create a workbook and active worksheet
         for i in reversed(range(self.listLayout.count())):
-            version = self.listLayout.itemAt(i).widget().text()
-            logger.info(version)
+            if self.listLayout.itemAt(i).widget().isChecked():
+                version = self.listLayout.itemAt(i).widget().text()
+                logger.info(version)
 
 
