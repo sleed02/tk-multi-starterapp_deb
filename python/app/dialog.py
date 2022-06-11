@@ -73,7 +73,6 @@ class AppDialog(QtGui.QWidget):
         # lastly, set up our very basic UI
 
     def setup_ui(self):
-        self.setGeometry(100, 80, 100, 80)
         self.version_status_filter = QtGui.QComboBox(self)
         self.version_status_filter.setMinimumWidth(50)
         self.version_status_filter.setMaximumWidth(150)
@@ -101,6 +100,7 @@ class AppDialog(QtGui.QWidget):
         self.scrollArea = QtGui.QScrollArea()
         self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.scrollArea.setEnabled(True)
+        self.scrollArea.setWidget(self)
         self.outerLayout.addLayout(self.listLayout)
         self.setLayout(self.outerLayout)
         self.update_version_rows()
