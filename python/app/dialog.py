@@ -73,8 +73,7 @@ class AppDialog(QtGui.QWidget):
         # lastly, set up our very basic UI
 
     def setup_ui(self):
-        self.setGeometry(100, 30, 100, 30)
-        self.setFixedSize(700, 700)
+        self.setGeometry(100, 80, 100, 80)
         self.version_status_filter = QtGui.QComboBox(self)
         self.version_status_filter.setMinimumWidth(50)
         self.version_status_filter.setMaximumWidth(150)
@@ -83,7 +82,7 @@ class AppDialog(QtGui.QWidget):
         self.status_label = QtGui.QLabel("Filter by Status:")
         self.outerLayout = QtGui.QVBoxLayout()
         # Create a form layout for the label and line edit
-        self.listLayout = QtGui.QFormLayout()
+        self.listLayout = QtGui.QGridLayout()
         # Create a layout for the versions
         self.optionsLayout = QtGui.QHBoxLayout()
         self.spaceItem = QtGui.QSpacerItem(50, 10, QtGui.QSizePolicy.Expanding)
@@ -102,7 +101,6 @@ class AppDialog(QtGui.QWidget):
         self.scrollArea = QtGui.QScrollArea()
         self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.scrollArea.setEnabled(True)
-        self.listLayout.addWidget(self.scrollArea)
         self.outerLayout.addLayout(self.listLayout)
         self.setLayout(self.outerLayout)
         self.update_version_rows()
@@ -139,9 +137,10 @@ class AppDialog(QtGui.QWidget):
 
         for i, version in enumerate(self.sg_versions):
             # build out text to show
-            self.checkbox = QtGui.QCheckBox(version["code"])
-            self.checkbox.setChecked(True)
-            self.listLayout.addRow(self.checkbox)
+            for d in range(4):
+                self.checkbox = QtGui.QCheckBox(version["code"])
+                self.checkbox.setChecked(True)
+                self.listLayout.addWidget(self.checkbox, i, d)
 
         self.select_all_box.setChecked(True)
 
@@ -164,5 +163,3 @@ class AppDialog(QtGui.QWidget):
             if self.listLayout.itemAt(i).widget().isChecked():
                 version = self.listLayout.itemAt(i).widget().text()
                 logger.info(version)
-
-
